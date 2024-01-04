@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import { CarModel } from "../Models/cars.js";
+import { CarModel, CarValidate } from "../Models/cars.js";
+import { userValidate } from "../Models/user.js";
 
 //---getAll
 async function getAllCars(req, res) {
@@ -13,7 +14,7 @@ async function getAllCars(req, res) {
             filter.company = companyFilter
         if (year)//----
             filter.year = year
-        let allCars = await CarModel.find(filter).skip(perPage*(page-1)).limit(perPage);
+        let allCars = await CarModel.find(filter).skip(perPage * (page - 1)).limit(perPage);
         res.json(allCars)
     }
     catch (err) {
@@ -38,9 +39,12 @@ async function getCarById(req, res) {
 //----post
 async function addCar(req, res) {
     try {
+        let checkCar = CarValidate(req.body);
+        if (checkCar.error)
+            return res.status(400).send(checkCar.error.details[0].message);
         let { company, price, km, year } = req.body;
-        if (!company || !price)
-            return res.status(404).send('company and price are required fields!!')
+        // if (!company || !price)
+        //     return res.status(404).send('company and price are required fields!!')
         let sameCar = await CarModel.find({ company, price })// לא יכול להיות שני רכבים של אותה חברה עם אותו מחיר
         if (sameCar.length > 0)
             return res.status(409).send("לחברה זו כבר יש רכב במחיר זה")
