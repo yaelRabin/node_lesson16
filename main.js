@@ -1,12 +1,16 @@
 import express from "express";
+import cors from "cors";
 import { config } from "dotenv";
-import {connectMongoDB} from './Config/connectMongo.js'
 import carsRouter from './Routes/cars.js'
 import userRouter from './Routes/user.js'
+import {connectMongoDB} from './Config/connectMongo.js'
+import errHandle from './middlewares/handleErrorsMiddleware.js'
 
 config();
 const app = express();
 app.use(express.json());
+
+app.use('/',cors({origin:"http://localhost:2142",methods:"DELETE"}));
 
 app.use('/', (req, res, next) => {
    console.log('welcome to our shop!');
@@ -27,12 +31,9 @@ app.use('/',(req,res)=>{
    res.status(404)
    throw new Error('oops,sorry, the page not found')
 })
+app.use(errHandle)
 
 
-app.use((err,req,res,next)=>{
-   let statusCode=res.statusCode||500;
-   res.status(statusCode).send(err.massage||"sorry, there is an error, try again")
-})
 
 
 let port=process.env.PORT || 2142

@@ -7,7 +7,8 @@ const userSchema=mongoose.Schema({
     userName:String,
     identity:String,
     email:String,
-    cars:[carSchema]
+    cars:[carSchema],
+    role:{type:String,default:"user"}
 })
 export const UserModel=mongoose.model("users",userSchema);
 
@@ -16,7 +17,8 @@ export const userValidate=(_user)=>{
         password:Joi.string().min(5).max(8).required(),
         userName:Joi.string().min(2).max(15).alphanum().required(),
         identity:Joi.string().pattern(/^[0-9]{9}$/).required(),
-        email:Joi.string().email()
+        email:Joi.string().email(),
+        role:Joi.string().default("user")
     })
     return schema.validate(_user);
 }

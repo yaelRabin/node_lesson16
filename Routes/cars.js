@@ -1,5 +1,7 @@
 import express from "express"
 import { getAllCars, getCarById, addCar, deleteCar, updateCar} from '../Controllers/cars.js'
+import authToken from '../middlewares/authToken.js'
+
 const router = express.Router();
 
 router.use('/', (req, res, next) => {
@@ -16,9 +18,9 @@ router.use('/', (req, res, next) => {
 
 router.get('/', getAllCars);
 router.get('/:idGet', getCarById);
-router.post('/', addCar)
-router.delete('/:idDelete', deleteCar)
-router.put('/:idUpdate', updateCar)
+router.post('/',authToken, addCar)
+router.delete('/:idDelete',authToken, deleteCar)
+router.put('/:idUpdate',authToken, updateCar)
 
 router.use('/', (req, res) => {
     res.status(400).send("oops,\n the page not found")
